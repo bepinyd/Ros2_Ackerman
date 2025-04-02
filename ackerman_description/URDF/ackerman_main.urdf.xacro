@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+<robot name="ackermann_1" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Parameters for customization -->
+  <xacro:include filename="ackerman_ros2_control.xacro"/>
+<xacro:include filename="ackerman_macros.xacro"/>
+
+  <xacro:property name="wheel_radius" value="0.1"/>
+  <xacro:property name="wheel_length" value="0.05"/>
+  <xacro:property name="wheel_clearance" value="0.15"/> <!-- Increased clearance -->
+  <xacro:property name="chassis_length" value="1.0"/>
+  <xacro:property name="chassis_width" value="0.2"/>
+  <xacro:property name="chassis_height" value="0.1"/>
+  <xacro:property name="wheel_base" value="0.4"/>
+   <xacro:property name="mu1" value="10"/>
+    <xacro:property name="mu2" value="10"/>
+
+  <!-- Base link -->
+  <link name="base_link"/>
+
+  <!-- Chassis START -->
+ 
+
+  <link name="chassis">
+    <collision>
+      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="5"/>
+      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+      <inertia ixx="0.4" ixy="0.1" ixz="0.1" iyy="0.4" iyz="0.1" izz="0.2"/>
+    </inertial>
+  </link>
+
+   <joint name="base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis"/>
+  </joint>
+
+  <gazebo reference="chassis">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <!-- Right Wheel - Start -->
+  <link name="right_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>
+    </visual>
+
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+
+  
+  </link>
+
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Blue</material>
+    <mu1>${mu1}</mu1>
+    <mu2>${mu2}</mu2>
+      
+  </gazebo>
+
+  <link name="right_wheel_assembly">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <sphere radius="0.04"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="0.001" radius="0.04"/>
+      </geometry>
+    </visual>
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+
+  </link>
+
+  <gazebo reference="right_wheel_assembly">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <joint name="right_wheel_hinge" type="revolute">
+    <parent link="chassis"/>
+    <child link="right_wheel_assembly"/>
+    <origin xyz="${wheel_base} ${wheel_clearance} 0.3" rpy="0 0 0"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <limit effort="100" velocity="1" lower="-1" upper="1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <joint name="right_wheel_rotate" type="continuous">
+    <parent link="right_wheel_assembly"/>
+    <child link="right_wheel"/>
+    <origin xyz="0.0 0.025 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="50"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <!-- Right Wheel - End -->
+
+  <!-- Left Wheel - Start -->
+  <link name="left_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>
+    </visual>
+
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+
+  </link>
+
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Blue</material>
+     <mu1>${mu1}</mu1>
+    <mu2>${mu2}</mu2>
+      
+  </gazebo>
+
+  <link name="left_wheel_assembly">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="0.001" radius="0.04"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+      <geometry>
+        <cylinder length="0.001" radius="0.04"/>
+      </geometry>
+    </visual>
+
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+
+   
+  </link>
+
+  <gazebo reference="left_wheel_assembly">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <joint name="left_wheel_hinge" type="revolute">
+    <parent link="chassis"/>
+    <child link="left_wheel_assembly"/>
+    <origin xyz="${wheel_base} -${wheel_clearance} 0.3" rpy="0 0 0"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <limit effort="100" velocity="1" lower="-1" upper="1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <joint name="left_wheel_rotate" type="continuous">
+    <parent link="left_wheel_assembly"/>
+    <child link="left_wheel"/>
+    <origin xyz="0.0 -0.025 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+  </joint>
+  <!-- Left Wheel - End -->
+
+  <link name="right_wheel_rear"> 
+		
+		<collision> 
+		  <origin xyz="0 0 0" rpy="0 1.5708 1.5708" />
+		  <geometry> 
+			<cylinder length="0.05" radius="0.1"/> 
+		  </geometry> 
+		</collision> 
+
+		<visual> 
+		  <origin xyz="0 0 0" rpy="0 1.5708 1.5708" /> 
+		  <geometry> 
+			<cylinder length="0.05" radius="0.1"/> 
+		  </geometry> 
+		</visual> 	
+
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>	
+
+	
+
+	</link>
+
+  <joint name="right_wheel_rear_rotate" type="continuous"> 
+    <parent link="chassis"/> 
+    <child link="right_wheel_rear"/> 
+    <origin xyz="-0.4 0.15 0.3" rpy="0 0 0" />  
+    <axis xyz="0 1 0" rpy="0 0 0" /> 
+  </joint>
+
+  <gazebo reference="right_wheel_rear"> 
+    <material>Gazebo/Yellow</material> 
+     <mu1>${mu1}</mu1>
+    <mu2>${mu2}</mu2>
+     
+  </gazebo>
+
+  <!-- Right Rear Wheel End -->
+
+    <!-- Right Rear Wheel Start -->
+	<link name="left_wheel_rear"> 
+		
+		<collision> 
+		  <origin xyz="0 0 0" rpy="0 1.5708 1.5708" />
+		  <geometry> 
+			<cylinder length="0.05" radius="0.1"/> 
+		  </geometry> 
+		</collision> 
+
+		<visual> 
+		  <origin xyz="0 0 0" rpy="0 1.5708 1.5708" /> 
+		  <geometry> 
+			<cylinder length="0.05" radius="0.1"/> 
+		  </geometry> 
+		</visual> 		
+      <xacro:cylinder_inertia m="1" r="0.3" h="0.1"  xyz="0 0 0" rpy="0 1.5708 1.5708"/>
+		
+
+	</link>
+
+  <joint name="left_wheel_rear_rotate" type="continuous"> 
+    <parent link="chassis"/> 
+    <child link="left_wheel_rear"/> 
+    <origin xyz="-0.4 -0.15 0.3" rpy="0 0 0" />  
+    <axis xyz="0 1 0" rpy="0 0 0" /> 
+  </joint>
+
+  <gazebo reference="left_wheel_rear"> 
+    <material>Gazebo/Blue</material> 
+     <mu1>${mu1}</mu1>
+    <mu2>${mu2}</mu2>
+  
+  </gazebo>
+
+</robot>
